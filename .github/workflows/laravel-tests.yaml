@@ -22,7 +22,7 @@ jobs:
           --health-cmd="mysqladmin ping -h 127.0.0.1"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=5
+          --health-retries=10
 
     steps:
       - uses: actions/checkout@v3
@@ -41,13 +41,23 @@ jobs:
       - name: Setup environment file
         run: |
           cp .env.example .env
+          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mariadb/' .env
           sed -i 's/DB_HOST=.*/DB_HOST=mariadb/' .env
           sed -i 's/DB_DATABASE=.*/DB_DATABASE=testing/' .env
           sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env
 
       - name: Generate application key
-        run: php artisan key:generate --env=testing
+        run: php artisan key:generate
+
+      - name: Wait for MariaDB to be ready
+        run: |
+          echo "Waiting for MariaDB to be ready..."
+          for i in {1..10}; do
+            nc -z mariadb 3306 && echo "MariaDB is up!" && break
+            echo "Waiting..."
+            sleep 5
+          done
 
       - name: Run migrations
         run: php artisan migrate --force

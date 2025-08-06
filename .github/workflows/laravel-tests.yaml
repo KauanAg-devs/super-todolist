@@ -48,7 +48,7 @@ jobs:
 
 
     - name: Generate application key
-      run: php artisan key:generate
+      run: php artisan key:generate --env=testing
 
     - name: Clear config cache
       run: php artisan config:clear

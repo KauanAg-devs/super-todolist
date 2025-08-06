@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      mariadb:
+      mysql:
         image: mariadb:10.5
         env:
           MYSQL_ROOT_PASSWORD: root
@@ -41,23 +41,24 @@ jobs:
       - name: Setup environment file
         run: |
           cp .env.example .env
-          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mariadb/' .env
-          sed -i 's/DB_HOST=.*/DB_HOST=mariadb/' .env
+          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+          sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i 's/DB_PORT=.*/DB_PORT=3306/' .env
           sed -i 's/DB_DATABASE=.*/DB_DATABASE=testing/' .env
           sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env
 
-      - name: Generate application key
-        run: php artisan key:generate
-
-      - name: Wait for MariaDB to be ready
+      - name: Wait for MariaDB
         run: |
           echo "Waiting for MariaDB to be ready..."
           for i in {1..10}; do
-            nc -z mariadb 3306 && echo "MariaDB is up!" && break
+            nc -z 127.0.0.1 3306 && echo "MariaDB is up!" && break
             echo "Waiting..."
             sleep 5
           done
+
+      - name: Generate app key
+        run: php artisan key:generate
 
       - name: Run migrations
         run: php artisan migrate --force

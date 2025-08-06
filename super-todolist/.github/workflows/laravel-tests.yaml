@@ -1,0 +1,53 @@
+name: Run Laravel Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        extensions: mbstring, intl, bcmath, pdo_mysql
+        ini-values: post_max_size=256M, upload_max_filesize=256M, memory_limit=2G
+        coverage: none
+
+    - name: Install Composer dependencies
+      run: composer install --no-progress --prefer-dist --no-interaction
+
+    - name: Copy .env example
+      run: cp .env.example .env
+
+    - name: Generate app key
+      run: php artisan key:generate
+
+    - name: Configure database
+      run: |
+        php artisan config:clear
+        php artisan migrate --force
+
+    - name: Run Tests
+      run: vendor/bin/phpunit --testdox

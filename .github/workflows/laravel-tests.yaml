@@ -56,7 +56,6 @@ jobs:
           sed -i 's/CACHE_DRIVER=.*/CACHE_DRIVER=array/' .env.testing
           sed -i 's/SESSION_DRIVER=.*/SESSION_DRIVER=array/' .env.testing
 
-
       - name: Wait for MariaDB
         run: |
           echo "Waiting for MariaDB to be ready..."
@@ -72,11 +71,11 @@ jobs:
       - name: Generate app key for testing
         run: php artisan key:generate --env=testing
 
-      - name: Clear and cache config
+      - name: Clear config and cache
         run: |
           php artisan config:clear
           php artisan cache:clear
-          php artisan config:cache
+          # NÃO rodar config:cache em ambiente de testes para evitar erros de cache fixo
 
       - name: Run migrations
         run: php artisan migrate --env=testing --force

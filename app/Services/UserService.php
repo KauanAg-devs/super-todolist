@@ -41,7 +41,7 @@ class UserService {
       $user->password = $data['password']; 
     }
 
-    #change email (aways in final of the method)
+    #change email (always at the end of the method)
     if (!isset($data['new_email'])) {
       $user->save();
       return $user;

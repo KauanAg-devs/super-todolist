@@ -11,7 +11,7 @@ Route::get('/', function () {
 
 Route::get('/login', function () {
     return view('auth.login');
-})->middleware('auth', 'verified')->name('login');
+})->name('login');
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');

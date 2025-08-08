@@ -53,6 +53,9 @@ jobs:
           sed -i 's/DB_DATABASE=.*/DB_DATABASE=testing/' .env .env.testing
           sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env .env.testing
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env .env.testing
+          sed -i 's/CACHE_DRIVER=.*/CACHE_DRIVER=array/' .env.testing
+          sed -i 's/SESSION_DRIVER=.*/SESSION_DRIVER=array/' .env.testing
+
 
       - name: Wait for MariaDB
         run: |

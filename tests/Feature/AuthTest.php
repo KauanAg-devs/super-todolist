@@ -12,6 +12,8 @@ class AuthTest extends TestCase
 
     public function test_signup_creates_user_and_logs_in()
     {
+        $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
+
         $postData = [
             'email' => 'teste@example.com',
             'password' => 'password123',

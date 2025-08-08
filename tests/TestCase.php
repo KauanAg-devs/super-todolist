@@ -10,9 +10,12 @@ abstract class TestCase extends BaseTestCase
     use CreatesApplication;
 
     protected function setUp(): void
-  {
-    parent::setUp();
-    $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
-  }
+    {
+        parent::setUp();
+
+        $this->withoutMiddleware();
+        $this->withSession([]);
+    }
+
 
 }

@@ -12,8 +12,12 @@ class AuthTest extends TestCase
 
   public function test_signup_creates_user_and_logs_in()
 {
+    $this->withoutMiddleware();
+
+    app()->instance('path.config', base_path('config'));
+
     config(['session.driver' => 'array']);
-    $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
+    config(['cache.default' => 'array']);
 
     $postData = [
         'email' => 'teste@example.com',
@@ -21,9 +25,8 @@ class AuthTest extends TestCase
         'password_confirmation' => 'password123',
     ];
 
-    $response = $this
-        ->withSession([])
-        ->post('/auth/signup', $postData);
+    $response = $this->withSession([])->post('/auth/signup', $postData);
+
 
     $response->assertRedirect('/');
 
